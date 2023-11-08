@@ -1,3 +1,6 @@
 html {
     background-color: greenyellow;
 }
+img {
+    max-width: 80vw
+}

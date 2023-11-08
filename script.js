@@ -1,71 +1,31 @@
 const rootElement = document.querySelector("#root")
+const api_key = "2Wy7heUJdApcYxZweuFrIuHqIlH8NUTK83dtdpla"
 
 const fetchUrl = async (url) => {
   const response = await fetch(url)
   return response.json()
 }
 
-const personComponent = (person) => `
-  <div class="person">
-    <h2>name: ${person.name}</h2>
-    <h3>height: ${person.height} cm</h3>
-  </div>
+const apodComponent = (apodData) => `
+<input type="date" id="date">
+<h2>${apodData.title}</h2>
+<h3>${apodData.date}</h3>
+<p>${apodData.explanation}</p>
+<img src=${apodData.url}>
 `
-
-const buttonComponent = (text, id) => `<button id=${id}>${text}</button>`
-
-const buttonEventComponent = (id, url, rootElement) => {
-  const buttonElement = document.querySelector(`#${id}`)
-  buttonElement.addEventListener("click", async () => {
-    rootElement.innerHTML = "LOADING..."
-
-    const newData = await fetchUrl(url)
-    makeDomFromData(newData, rootElement)
-  })
-}
-
-const inputComponent = () => `
-  <div class="search">
-    <input type="text" id="name">
-    <button id="search">search!</button>
-  </div>
-`
-
-const inputEventComponent = () => {
-  const buttonElement = document.querySelector("#search")
-  buttonElement.addEventListener("click", async () => {
-    const inputElement = document.querySelector("#name")
-    const searchTag = inputElement.value
-    rootElement.innerHTML = "LOADING..."
-    
-    const newData = await fetchUrl(`https://swapi.dev/api/people/?search=${searchTag}`)
-    makeDomFromData(newData, rootElement)
-  })
-}
-
-const makeDomFromData = (data, rootElement) => {
-  rootElement.innerHTML = inputComponent()
-  inputEventComponent()
-
-  data.results.forEach((person) => {
-    rootElement.insertAdjacentHTML("beforeend", personComponent(person))
-  })
-
-  if (data.previous) {
-    rootElement.insertAdjacentHTML("beforeend", buttonComponent("previous", "prev"))
-    buttonEventComponent("prev", data.previous, rootElement)
-  }
-
-  if (data.next) {
-    rootElement.insertAdjacentHTML("beforeend", buttonComponent("next", "next"))
-    buttonEventComponent("next", data.next, rootElement)
-  }
-}
 
 const init = async () => {
-  rootElement.innerHTML = "LOADING..."
-  const data = await fetchUrl("https://swapi.dev/api/people/")
-  makeDomFromData(data, rootElement)
+  const data = await fetchUrl(`https://api.nasa.gov/planetary/apod?api_key=${api_key}`)
+  console.log(data)
+
+  //rootElement.innerHTML = `<h2>${data.title}</h2>`
+  rootElement.insertAdjacentHTML('beforeend', apodComponent(data))
+
+  const arrayData = await fetchUrl(`https://api.nasa.gov/planetary/apod?api_key=${api_key}&count=5`)
+  console.log(arrayData);
+
+  const dataByDate = await fetchUrl(`https://api.nasa.gov/planetary/apod?api_key=${api_key}&date=2010-10-10`)
+  console.log(dataByDate)
 }
 
 init()
